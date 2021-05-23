@@ -1,10 +1,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <stdio.h>
+
 #include <lua.h>
 #include <lauxlib.h>
 
-#include "templates/counter.h"
+//#include "templates/counter.h"
 #include "list.h"
 #include "genius_info.h"
 
@@ -17,42 +19,45 @@ typedef struct {
     int id;
 } lfs_info_userdata_t;
 
-static int lcounter_new(lua_State *L) {
+
+struct {
+    char *name;
+    int size;
+} _files[] = {
+        {"myfile.txt", 533},
+        {"hww.bin",    4444444}
+};
+
+static int info(lua_State *L) {
     fs_info start;
     return_info(&start);
     start = *start.next;
     int i = 0;
+    char *snum = malloc( 20);
 
-
+    lua_newtable(L);
     do {
+        sprintf(snum, "%d", i);
+
+        lua_pushstring(L, snum);
+
         start = *start.next;
-        lfs_info_userdata_t *cu;
 
-        /* Create the user data pushing it onto the stack. We also pre-initialize
-     * the member of the userdata in case initialization fails in some way. If
-     * that happens we want the userdata to be in a consistent state for __gc. */
-        cu = (lfs_info_userdata_t *) lua_newuserdata(L, sizeof(*cu));
-        cu->fs_size = NULL;
-        cu->metric[0] = '\0';
-        cu->fs_type[0] = '\0';
-        cu->fs_name[0] = '\0';
-        cu->id = NULL;
+        lua_createtable(L, 0, 2);
+        lua_pushstring(L, start.fs_name);
+        lua_setfield(L, -2, "name");
+        lua_pushinteger(L, start.fs_size);
+        lua_setfield(L, -2, "size");
 
-        /* Add the metatable to the stack. */
-        luaL_getmetatable(L, "LInfo");
-        /* Set the metatable on the userdata. */
-        lua_setmetatable(L, -2);
-
-        /* Create the data that comprises the userdata (the counter). */
-
-
+        lua_settable(L, -3);
 
         printf("%s\n", start.fs_name);
-        strcpy(cu->fs_name,start.fs_name);
-        strcpy(cu->fs_type,start.fs_type);
-        strcpy(cu->metric,start.metric);
-        cu->id = i;
-        cu->fs_size=start.fs_size;
+        printf("%d\n", start.fs_size);
+//        strcpy(cu->fs_name,start.fs_name);
+//        strcpy(cu->fs_type,start.fs_type);
+//        strcpy(cu->metric,start.metric);
+//        cu->id = i;
+//        cu->fs_size=start.fs_size;
         i+=1;
 
     } while (start.next);
@@ -60,6 +65,33 @@ static int lcounter_new(lua_State *L) {
     return 1;
 }
 
+
+int test(lua_State *L) {
+
+    lua_newtable(L);
+
+    lua_pushstring(L, "12");
+
+    lua_createtable(L, 0, 2);
+    lua_pushstring(L, _files[0].name);
+    lua_setfield(L, -2, "name");
+    lua_pushinteger(L, _files[0].size);
+    lua_setfield(L, -2, "size");
+
+    lua_settable(L, -3);
+
+    lua_pushstring(L, "23");
+    lua_createtable(L, 0, 2);
+    lua_pushstring(L, _files[1].name);
+    lua_setfield(L, -2, "name");
+    lua_pushinteger(L, _files[1].size);
+    lua_setfield(L, -2, "size");
+
+
+    lua_settable(L, -3);
+
+    return 1;
+}
 
 
 static const struct luaL_Reg linfo_methods[] = {
@@ -69,7 +101,8 @@ static const struct luaL_Reg linfo_methods[] = {
 };
 
 static const struct luaL_Reg linfo_functions[] = {
-        {"new", lcounter_new},
+        {"info", info},
+        {"test", test},
         {NULL, NULL}
 };
 

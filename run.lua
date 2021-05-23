@@ -4,7 +4,7 @@ function istable(t)
     return type(t) == "table"
 end
 
-o = lcounter:test()
+o = lcounter:info()
 
 function expandObjFull(o, p)
     r = {}
@@ -20,13 +20,3 @@ function expandObjFull(o, p)
 end
 
 expandObjFull(o, "")
-
-
---c:add(4)
---c:decrement()
---print("val=" .. c:getval())
---
---c:subtract(-2)
---c:increment()
---kek = getmetatable("LInfo")
---print(inspect(kek ))
