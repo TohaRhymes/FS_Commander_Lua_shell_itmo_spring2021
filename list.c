@@ -23,27 +23,3 @@ void PathListAdd(fs_info** listHead, fs_info newNode){
     last->next = newNodePtr;
 
 }
-void PathListClear(fs_info *listHead){
-    fs_info *start = listHead;
-    fs_info *prev = NULL;
-
-    while (start) {
-        prev = start;
-        start = start->next;
-
-        if (prev) {
-            free(prev);
-        }
-    }
-
-}
-
-fs_info* GetPathListLastNode(fs_info ** listHead) {
-    fs_info * listStart = *listHead;
-
-    while(listStart->next != NULL) {
-        listStart = listStart->next;
-    }
-
-    return listStart;
-}

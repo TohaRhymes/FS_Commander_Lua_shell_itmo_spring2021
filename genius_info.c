@@ -60,7 +60,6 @@ void iterate_dev(blkid_cache *cache, struct fs_info *listHead) {
     blkid_dev dev;
     blkid_dev_iterate iterator = blkid_dev_iterate_begin(*cache);
 
-    printf("System partition:\n");
     char devname[63];
 
     while (blkid_dev_next(iterator, &dev) == 0) {

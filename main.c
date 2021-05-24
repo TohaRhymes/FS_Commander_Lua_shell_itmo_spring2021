@@ -2,22 +2,12 @@
 #include <string.h>
 
 #include <stdio.h>
-
 #include <lua.h>
 #include <lauxlib.h>
 
-//#include "templates/counter.h"
 #include "list.h"
 #include "genius_info.h"
 
-/* Userdata object that will hold the counter and name. */
-typedef struct {
-    ll fs_size;
-    char metric[3];
-    char fs_type[15];
-    char fs_name[63];
-    int id;
-} lfs_info_userdata_t;
 
 
 struct {
@@ -48,16 +38,14 @@ static int info(lua_State *L) {
         lua_setfield(L, -2, "name");
         lua_pushinteger(L, start.fs_size);
         lua_setfield(L, -2, "size");
+        lua_pushstring(L, start.metric);
+        lua_setfield(L, -2, "metric");
+        lua_pushstring(L, start.fs_type);
+        lua_setfield(L, -2, "type");
 
         lua_settable(L, -3);
 
-        printf("%s\n", start.fs_name);
-        printf("%d\n", start.fs_size);
-//        strcpy(cu->fs_name,start.fs_name);
 //        strcpy(cu->fs_type,start.fs_type);
-//        strcpy(cu->metric,start.metric);
-//        cu->id = i;
-//        cu->fs_size=start.fs_size;
         i+=1;
 
     } while (start.next);
