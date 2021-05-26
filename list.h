@@ -20,13 +20,6 @@ typedef struct fs_info {
     char metric[3];
 } fs_info;
 
-typedef struct file_info {
-    struct file_info *next;
-    char file_name[128];
-    char file_type[5];
-} file_info;
-
-
 typedef struct stringData {
     char *s;
     char *s_type;
@@ -38,12 +31,8 @@ files_Node *files_createNode(char *s, char *s_type);
 
 void files_insert(files_Node **link, files_Node *newNode);
 
-void files_printList(files_Node *head);
-
 
 void PathListAdd_fs_info(fs_info **listHead, fs_info newNode);
-
-void PathListAdd_file_info(file_info **listHead, file_info newNode);
 
 
 

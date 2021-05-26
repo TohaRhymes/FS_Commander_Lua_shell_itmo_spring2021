@@ -23,28 +23,7 @@ void PathListAdd_fs_info(fs_info** listHead, fs_info newNode){
     last->next = newNodePtr;
 }
 
-void PathListAdd_file_info(file_info** listHead, file_info newNode){
-    file_info * newNodePtr = malloc(sizeof(file_info));
-    file_info * last =  *listHead;
-    strcpy(newNodePtr->file_type, newNode.file_type);
-    strcpy(newNodePtr->file_name, newNode.file_name);
 
-    newNodePtr->next = NULL;
-
-    if (*listHead == NULL) {
-        *listHead = newNodePtr;
-        return;
-    }
-    int i = 0;
-    while(last->next != NULL) {
-        i+=1;
-        last = last->next;
-    }
-
-    last->next = newNodePtr;
-    free(newNodePtr);
-
-}
 
 
 files_Node *files_createNode(char *s, char* s_type) {
@@ -64,11 +43,4 @@ files_Node *files_createNode(char *s, char* s_type) {
 void files_insert(files_Node **link, files_Node *newNode) {
     newNode->next = *link;
     *link = newNode;
-}
-
-void files_printList(files_Node *head) {
-    while (head != NULL) {
-        printf("%s\n", head->s);
-        head = head->next;
-    }
 }

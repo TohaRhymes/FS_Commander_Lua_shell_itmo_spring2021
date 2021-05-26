@@ -92,7 +92,6 @@ static int shell_ls(lua_State *L) {
     if (output == NULL) {
         return 0;
     }
-//    printf("%s", output);
 
     int i = 0;
     char *snum = malloc(20);
@@ -101,19 +100,15 @@ static int shell_ls(lua_State *L) {
     while (head != NULL) {
 
         sprintf(snum, "%d", i);
-//        printf("_____%s\t%s\t%s\n", head->s_type, head->s, snum);
         lua_pushstring(L, snum);
-
         lua_createtable(L, 0, 2);
-
         lua_pushstring(L, head->s);
         lua_setfield(L, -2, "name");
         lua_pushstring(L, head->s_type);
         lua_setfield(L, -2, "type");
-
         lua_settable(L, -3);
         i += 1;
-//
+
         head = head->next;
     }
 
@@ -126,8 +121,9 @@ static int shell_ls(lua_State *L) {
 
 static int shell_cd(lua_State *L) {
     char *path = lua_tostring(L, -1);
-//    printf("%s\n", path);
+
     char *output = cd(fs, path);
+
     lua_newtable(L);
     lua_createtable(L, 0, 1);
     lua_pushstring(L, output);
@@ -147,8 +143,9 @@ static int exit(lua_State *L) {
 int shell_cp(lua_State *L){
     char *to = lua_tostring(L, -1);
     char *from = lua_tostring(L, -2);
-    printf("%s %s", from, to);
+
     char *output = cp(fs, from, to);
+
     lua_newtable(L);
     lua_createtable(L, 0, 1);
     lua_pushstring(L, output);
@@ -160,8 +157,6 @@ int shell_cp(lua_State *L){
 
 
 static const struct luaL_Reg linfo_methods[] = {
-//        { "add",         lcounter_add       },
-//        { "__tostring",  lcounter_tostring  },
         {NULL, NULL},
 };
 
