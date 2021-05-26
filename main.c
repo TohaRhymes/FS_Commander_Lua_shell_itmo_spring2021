@@ -124,7 +124,7 @@ static int shell_ls(lua_State *L) {
 }
 
 
-int shell_cd(lua_State *L) {
+static int shell_cd(lua_State *L) {
     char *path = lua_tostring(L, -1);
 //    printf("%s\n", path);
     char *output = cd(fs, path);
@@ -137,75 +137,27 @@ int shell_cd(lua_State *L) {
 }
 
 
-//
-//
-//int shell(lua_State *L){
-//    struct ntfs_sb_info *fs  = ntfs_init(filename);
-//    if (fs == NULL) return -1;
-//    printf("NTFS filesystem detected.\n");
-//    int exitFlag = 0;
-//    char *inputString = malloc(1024);
-//    while (!exitFlag) {
-//        char *pwd_path = pwd(fs);
-//        printf("%s$ ", pwd_path);
-//        free(pwd_path);
-//        fgets(inputString, 1024, stdin);
-//        char *command = strtok(inputString, " \n");
-//        if (command == NULL) {
-//            continue;
-//        }
-//        char *path = strtok(NULL, " \n");
-//        char *out_path = strtok(NULL, " \n");
-//        if (strcmp(command, "exit") == 0) {
-//            exitFlag = 1;
-//        } else if (strcmp(command, "help") == 0) {
-//            printf("cd [directory] - change working directory\n");
-//            printf("pwd - print full path to working directory \n");
-//            printf("cp [directory/file] [target directory] - copy dir or file from mounted device\n");
-//            printf("ls/ll - show working directory elements\n");
-//            printf("exit - terminate program\n");
-//            printf("help - print help\n");
-//        } else if (strcmp(command, "ls") == 0 || strcmp(command, "ll") == 0 ) {
-//            char *output = ls(fs, path);
-//            if (output == NULL) {
-//                printf("No such file or directory\n");
-//                continue;
-//            }
-//            printf("%s", output);
-//            free(output);
-//        } else if (strcmp(command, "pwd") == 0) {
-//            char *output = pwd(fs);
-//            printf("%s\n", output);
-//            free(output);
-//        } else if (strcmp(command, "cd") == 0) {
-//            if (path == NULL){
-//                printf("cd command requires path argument\n");
-//                continue;
-//            }
-//            char *output = cd(fs, path);
-//            printf("%s", output);
-//            free(output);
-//        } else if (strcmp(command, "cp") == 0) {
-//            if (path == NULL) {
-//                printf("cp command requires path argument\n");
-//                continue;
-//            }
-//            if (out_path == NULL) {
-//                printf("cp command requires out_path argument\n");
-//                continue;
-//            }
-//            char *output = cp(fs, path, out_path);
-//            printf("%s", output);
-//            free(output);
-//        } else {
-//            printf("Wrong command. Enter 'help' to get help.\n");
-//        }
-//    }
-//    free_fs(fs);
-//    return 0;
-//}
-//
-//
+static int exit(lua_State *L) {
+    free_fs(fs);
+    return 1;
+}
+
+
+
+int shell_cp(lua_State *L){
+    char *to = lua_tostring(L, -1);
+    char *from = lua_tostring(L, -2);
+    printf("%s %s", from, to);
+    char *output = cp(fs, from, to);
+    lua_newtable(L);
+    lua_createtable(L, 0, 1);
+    lua_pushstring(L, output);
+    lua_setfield(L, -2, "cp");
+    free(output);
+    return 1;
+}
+
+
 
 static const struct luaL_Reg linfo_methods[] = {
 //        { "add",         lcounter_add       },
@@ -220,6 +172,8 @@ static const struct luaL_Reg linfo_functions[] = {
         {"shell_pwd",   shell_pwd},
         {"shell_ls",    shell_ls},
         {"shell_cd",    shell_cd},
+        {"shell_cp",    shell_cp},
+        {"exit", exit},
         {NULL, NULL}
 };
 

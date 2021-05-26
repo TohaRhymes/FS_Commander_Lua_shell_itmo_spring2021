@@ -20,7 +20,6 @@ function expandObjFull(o, p)
     end
 end
 
-
 printf = function(s, ...)
     return io.write(s:format(...))
 end
@@ -29,14 +28,12 @@ function split (inputstr, sep)
     if sep == nil then
         sep = "%s"
     end
-    local t={}
-    for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+    local t = {}
+    for str in string.gmatch(inputstr, "([^" .. sep .. "]+)") do
         table.insert(t, str)
     end
     return t
 end
-
-
 
 function print_help()
     print("\t* To run program in list mode use `list` key.")
@@ -52,9 +49,9 @@ function print_info(o)
 end
 
 function print_ls(o)
-    if o==nil then
+    if o == nil then
         print("No such file or directory.")
-    elseif type(o)=="string" then
+    elseif type(o) == "string" then
         print()
     else
         for k, v in pairs(o) do
@@ -79,6 +76,7 @@ function shell(genius_lib, name)
         if input_string[1] == "" or input_string[1] == nil then
             goto continue
         elseif input_string[1] == "exit" then
+            genius_lib:exit()
             exit_flag = true
             print("Terminating...")
         elseif input_string[1] == "help" then
@@ -101,7 +99,13 @@ function shell(genius_lib, name)
             if input_string[2] ~= nil then
                 printf("%s", genius_lib:shell_cd(input_string[2])["cd"])
             else
-                print("cd command requires path argument.")
+                print("cd command requires path argument")
+            end
+        elseif input_string[1] == "cp" then
+            if input_string[2] ~= nil and input_string[3] ~= nil then
+                print(genius_lib:shell_cp(input_string[2], input_string[3])["cp"])
+            else
+                print("cp command requires 2 arguments: `from` and `to`")
             end
         else
             print("Wrong command. Enter 'help' to get help.")
@@ -128,18 +132,3 @@ print("Incorrect command line arguments.");
 print_help()
 return 0
 
-
---function istable(t)
---    return type(t) == "table"
---end
---function expandObjFull(o, p)
---    for k, v in pairs(o) do
---        if istable(v) then
---            print(p .. "" .. k .. " = {")
---            expandObjFull(v, p .. " ")
---            print(p .. "}")
---        else
---            print(p .. "" .. k .. " = " .. v)
---        end
---    end
---end
