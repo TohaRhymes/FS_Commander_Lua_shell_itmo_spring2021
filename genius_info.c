@@ -79,7 +79,7 @@ void iterate_dev(blkid_cache *cache, struct fs_info *listHead) {
             strcpy(cur->fs_type, currr.fs_type);
             strcpy(cur->fs_name, devname);
         }
-        PathListAdd(&listHead, *cur);
+        PathListAdd_fs_info(&listHead, *cur);
     }
 }
 

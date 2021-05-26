@@ -4,9 +4,39 @@
 --- DateTime: 25.05.2021 0:23
 ---
 
+
+function istable(t)
+    return type(t) == "table"
+end
+function expandObjFull(o, p)
+    for k, v in pairs(o) do
+        if istable(v) then
+            print(p .. "" .. k .. " = {")
+            expandObjFull(v, p .. " ")
+            print(p .. "}")
+        else
+            print(p .. "" .. k .. " = " .. v)
+        end
+    end
+end
+
+
 printf = function(s, ...)
     return io.write(s:format(...))
 end
+
+function split (inputstr, sep)
+    if sep == nil then
+        sep = "%s"
+    end
+    local t={}
+    for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+        table.insert(t, str)
+    end
+    return t
+end
+
+
 
 function print_help()
     print("\t* To run program in list mode use `list` key.")
@@ -14,27 +44,44 @@ function print_help()
 
 end
 
-function print_info(o, p)
+function print_info(o)
     print("System partition:\nname\t\tsize\ttype")
     for k, v in pairs(o) do
         print(v["name"] .. "\t" .. v["size"] .. " " .. v["metric"] .. "\t" .. v["type"])
     end
 end
 
-function shell(name)
-    --CHECK DETECTION
+function print_ls(o)
+    if o==nil then
+        print("No such file or directory.")
+    elseif type(o)=="string" then
+        print()
+    else
+        for k, v in pairs(o) do
+            print(v["type"] .. "\t" .. v["name"])
+        end
+    end
+end
+
+function shell(genius_lib, name)
+    o = genius_lib:shell_check(name)
+    if not o["is_okay"] then
+        print("Incorrect device name. Please, check and try again.")
+        return 1
+    end
     print("NTFS filesystem detected.")
-    pwd_path = "kek"
+
     exit_flag = false
     while not exit_flag do
+        pwd_path = genius_lib:shell_pwd()["pwd"]
         printf("%s$ ", pwd_path)
-        input_string = io.read()
-        if input_string == "" then
+        input_string = split(io.read(), " ")
+        if input_string[1] == "" or input_string[1] == nil then
             goto continue
-        elseif input_string == "exit" then
+        elseif input_string[1] == "exit" then
             exit_flag = true
             print("Terminating...")
-        elseif input_string == "help" then
+        elseif input_string[1] == "help" then
             print("--------------------------------------------------------")
             print("COMMAND\t\t| DESCRIPTION")
             print("----------------| --------------------------------------")
@@ -45,6 +92,17 @@ function shell(name)
             print("exit\t\t| terminate program")
             print("help\t\t| print help")
             print("--------------------------------------------------------")
+        elseif input_string[1] == "pwd" then
+            print(genius_lib:shell_pwd()["pwd"])
+        elseif input_string[1] == "ls" or input_string[1] == "ll" then
+            o = genius_lib:shell_ls(input_string[2])
+            print_ls(o)
+        elseif input_string[1] == "cd" then
+            if input_string[2] ~= nil then
+                printf("%s", genius_lib:shell_cd(input_string[2])["cd"])
+            else
+                print("cd command requires path argument.")
+            end
         else
             print("Wrong command. Enter 'help' to get help.")
         end
@@ -52,18 +110,18 @@ function shell(name)
     end
 end
 
-genius_lib = require("libspo_lab2_fs_for_lua")
+genius_lib = require("lib_ntfs")
 if arg[1] == "help" then
     print_help()
     return 0
 end
 if arg[1] == "list" then
     o = genius_lib:info()
-    print_info(o, "")
+    print_info(o)
     return 0
 end
 if arg[1] == "commander" and arg[2] ~= nil then
-    shell(arg[2])
+    shell(genius_lib, arg[2])
     return 0
 end
 print("Incorrect command line arguments.");
